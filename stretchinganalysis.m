@@ -2,13 +2,14 @@
 
 clear
 
-[file,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms','Select .tdms file');
-filepath = strcat(path,file);
+[file1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms','Select .tdms file');
+filepath = strcat(path,file1);
 data = TDMS_getStruct(filepath);
+file1=erase(file1,'.tdms');
 
 
-[file,path] = uigetfile(strcat(path,'*txt'),'Select bead tracking data');
-filepath = strcat(path,file);
+[file2,path] = uigetfile(strcat(path,'*txt'),'Select bead tracking data');
+filepath = strcat(path,file2);
 beadbeaddist = ReadBeadtrackingTextFile( filepath );
 
 
@@ -83,38 +84,54 @@ end
 end
 
 %%
-figure
-for iStretch = 1:stretches;
-    plot(dist.av{3,iStretch},force.xav{3,iStretch})
-    hold on
-end
-hold off
+% figure
+% for iStretch = 1:stretches;
+%     plot(dist.av{3,iStretch},force.xav{3,iStretch})
+%     hold on
+% end
+% hold off
 
 
 
 %% Select user ROI
-
-figure
-subplot(2,1,1);
-plot(time,forceCH1)
-vline(start_times,'g')
-
-subplot(2,1,2);
-plot(time,beadbeaddist)
-[xtimes,yforces]= ginput(100);
+% 
+% figure
+% subplot(2,1,1);
+% plot(time,forceCH1)
+% vline(start_times,'g')
+% 
+% subplot(2,1,2);
+% plot(time,beadbeaddist)
+% [xtimes,yforces]= ginput(100);
 
 %% Determine closest starting points and end points to analyse
-start_end_analyse_index=zeros(2,length(xtimes));
-for sel= 1:length(xtimes)
-    index=find(abs(start_times-xtimes(sel)) == min(abs(start_times-xtimes(sel))));
-    start_end_analyse_index(1,sel) = start_real_times_index(index);
-    start_end_analyse_index(2,sel) = end_real_times_index(index);
-end
+% start_end_analyse_index=zeros(2,length(xtimes));
+% for sel= 1:length(xtimes)
+%     index=find(abs(start_times-xtimes(sel)) == min(abs(start_times-xtimes(sel))));
+%     start_end_analyse_index(1,sel) = start_real_times_index(index);
+%     start_end_analyse_index(2,sel) = end_real_times_index(index);
+% end
+% 
+% 
+% figure
+% for figs=1:length(start_end_analyse_index(1,:));
+%     plot(interbeaddist(start_end_analyse_index(1,figs):start_end_analyse_index(2,figs)), forceCH1( start_end_analyse_index(1,figs):start_end_analyse_index(2,figs) ) )
+%     hold on
+% end
+% hold off
 
+%%
+gitinfo=getGitInfo();
 
-figure
-for figs=1:length(start_end_analyse_index(1,:));
-    plot(interbeaddist(start_end_analyse_index(1,figs):start_end_analyse_index(2,figs)), forceCH1( start_end_analyse_index(1,figs):start_end_analyse_index(2,figs) ) )
-    hold on
+%%
+% Option to save analyzed data and script in .mat file
+
+prompt = {'If you want to save the analyzed data, please put filepath here. Otherwise write NO.'};
+    title = 'Input';
+    dims = [1 100];
+    definput = {'D:\DataAnalysis\Chromavision\Emma'};
+    answer = inputdlg(prompt,title,dims,definput);
+    
+if strcmp(answer{1},'NO')
+else save(strcat(answer{1},'\workspace_',file1));
 end
-hold off

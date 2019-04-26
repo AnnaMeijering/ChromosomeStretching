@@ -2,13 +2,13 @@
 
 clear
 
-[file,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms','Select .tdms file');
-filepath = strcat(path,file);
+[file1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms','Select .tdms file');
+filepath = strcat(path,file1);
 data = TDMS_getStruct(filepath);
 
 
-[file,path] = uigetfile(strcat(path,'*txt'),'Select bead tracking data');
-filepath = strcat(path,file);
+[file2,path] = uigetfile(strcat(path,'*txt'),'Select bead tracking data');
+filepath = strcat(path,file2);
 beadbeaddist = ReadBeadtrackingTextFile( filepath );
 
 
@@ -72,20 +72,25 @@ end
 
 
 %%
-force.xav=cell(1,stretches);
-distanceav=cell(1,stretches);
+force.xav=cell(3,stretches);
+dist.av=cell(3,stretches);
+Averaging=[2 5 10];
+for j=1:3;
 for i=1:stretches;
-        force.xav{i}=averagearray(force.x{i},10);
-        distanceav{i}=averagearray(dist.abs{i},10);
+        force.xav{j,i}=averagearray(force.x{i},Averaging(j));
+        dist.av{j,i} =averagearray(dist.abs{i},Averaging(j));
+end
 end
 
 %%
 figure
 for iStretch = 1:stretches;
-    plot(distanceav{iStretch},force.xav{iStretch})
+    plot(dist.av{3,iStretch},force.xav{3,iStretch})
     hold on
 end
 hold off
+
+
 
 %% Select user ROI
 
@@ -114,10 +119,15 @@ for figs=1:length(start_end_analyse_index(1,:));
 end
 hold off
 
+%%
+% Option to save analyzed data and script in .mat file
 
-
-
-
-% Determine starting distance of traps
-dist50pN=dist50pN-4.65;
-time50pN = time(index50pN(1));
+prompt = {'If you want to save the analyzed data, please put filepath here. Otherwise write NO.'};
+    title = 'Input';
+    dims = [1 100];
+    definput = {'D:\DataAnalysis\Chromavision\Emma'};
+    answer = inputdlg(prompt,title,dims,definput);
+    
+if strcmp(answer{1},'NO')
+else save(strcat(answer{1},'\workspace'));
+end
