@@ -1,16 +1,21 @@
 % StretchingAnalysis
-
 clear
 
-[file1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms','Select .tdms file');
-filepath = strcat(path,file1);
-data = TDMS_getStruct(filepath);
-file1=erase(file1,'.tdms');
+[file1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms',...
+    'Select .tdms file','MultiSelect','on');
+NFiles = length(file1);
 
+for iF=1:NFiles
 
-[file2,path] = uigetfile(strcat(path,'*txt'),'Select bead tracking data');
-filepath = strcat(path,file2);
-beadbeaddist = ReadBeadtrackingTextFile( filepath );
+filepath1 = strcat(path,file1{iF});
+data = TDMS_getStruct(filepath1);
+filefolder=erase(file1{iF},'.tdms');
+
+filepath2=erase(filepath1,'.tdms');
+filepath2=strcat(filepath2,'.img');
+[file2,path2] = uigetfile(strcat(filepath2,'\*txt'),'Select bead tracking data');
+filepath2 = strcat(path2,file2);
+beadbeaddist = ReadBeadtrackingTextFile( filepath2 );
 
 
 %% Obtain all relevant input from datafiles or ask user for input
@@ -22,11 +27,6 @@ beadtrackdistance=data.FD_Data.Distance_1__um_.data;
 beaddiam=data.FD_Data.Props.Bead_Diameter__um_ ;
 interbeaddist=beadbeaddist-beaddiam;
 gitinfo=getGitInfo();
-
-% trap_stiffness_CH0=data.FD_Data.Force_Channel_0__pN_.Props.Trap_stiffness__pN_m_/10^6; % [um/pN]
-% trap_stiffness_CH1=data.FD_Data.Force_Channel_1__pN_.Props.Trap_stiffness__pN_m_/10^6; % [um/pN]
-% distance_calibration=data.FD_Data.Props.Distance_Calibration__nm_pix_;
-
 
     prompt = {'Enter pulling speed in um/s:','Enter sample age in days:'};
     title = 'Input';
@@ -47,6 +47,7 @@ end
 startFDindices=strcmp('F,d curve: Start',marks.mark);
 endFDindices=strcmp('F,d curve: End',marks.mark);
 stretches = sum(startFDindices);
+retractions = sum(endFDindices);
 start_times=cell2mat(marks.time(startFDindices));
 end_times=cell2mat(marks.time(endFDindices));
 
@@ -61,7 +62,14 @@ dist.abs=cell(1,stretches);
 dist.x50pN=cell(1,stretches);
 for iStretch=1:stretches
     [~, start_real_times_index(iStretch)] = min(abs(time - start_times(iStretch)));
-    [~, end_real_times_index(iStretch)] = min(abs(time - end_times(iStretch)));
+    if stretches ==retractions
+        [~, end_real_times_index(iStretch)] = min(abs(time - end_times(iStretch)));
+    else
+        if iStretch < stretches
+            [~, end_real_times_index(iStretch)] = min(abs(time - end_times(iStretch)));
+        else end_real_times_index(iStretch) = length(time);
+        end
+    end
     force.x{iStretch} = forceCH1( [start_real_times_index(iStretch):end_real_times_index(iStretch)] );
     force.y{iStretch} = forceCH0( [start_real_times_index(iStretch):end_real_times_index(iStretch)] );
     dist.abs{iStretch} = interbeaddist( [start_real_times_index(iStretch):end_real_times_index(iStretch)] );
@@ -96,13 +104,13 @@ end
 
 %% Select user ROI
 % 
-% figure
-% subplot(2,1,1);
-% plot(time,forceCH1)
-% vline(start_times,'g')
-% 
-% subplot(2,1,2);
-% plot(time,beadbeaddist)
+figure
+subplot(2,1,1);
+plot(time,forceCH1)
+vline(start_times,'g')
+
+subplot(2,1,2);
+plot(time,interbeaddist)
 % [xtimes,yforces]= ginput(100);
 
 %% Determine closest starting points and end points to analyse
@@ -132,5 +140,6 @@ prompt = {'If you want to save the analyzed data, please put filepath here. Othe
     answer = inputdlg(prompt,title,dims,definput);
     
 if strcmp(answer{1},'NO')
-else save(strcat(answer{1},'\workspace_',file1));
+else save(strcat(answer{1},'\workspace_',filefolder));
+end
 end
