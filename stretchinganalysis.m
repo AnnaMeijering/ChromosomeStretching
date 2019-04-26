@@ -143,3 +143,4 @@ if strcmp(answer{1},'NO')
 else save(strcat(answer{1},'\workspace_',filefolder));
 end
 end
+close all
