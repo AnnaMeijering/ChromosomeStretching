@@ -21,6 +21,7 @@ time=data.FD_Data.Time__ms_.data;
 beadtrackdistance=data.FD_Data.Distance_1__um_.data;
 beaddiam=data.FD_Data.Props.Bead_Diameter__um_ ;
 interbeaddist=beadbeaddist-beaddiam;
+gitinfo=getGitInfo();
 
 % trap_stiffness_CH0=data.FD_Data.Force_Channel_0__pN_.Props.Trap_stiffness__pN_m_/10^6; % [um/pN]
 % trap_stiffness_CH1=data.FD_Data.Force_Channel_1__pN_.Props.Trap_stiffness__pN_m_/10^6; % [um/pN]
@@ -120,8 +121,6 @@ end
 % end
 % hold off
 
-%%
-gitinfo=getGitInfo();
 
 %%
 % Option to save analyzed data and script in .mat file
