@@ -20,6 +20,10 @@ beadbeaddist = ReadBeadtrackingTextFile( filepath2 );
 
 %% Obtain all relevant input from datafiles or ask user for input
 % trackingmode = data.FD_Data.Props.Tracking_Mode;
+if  isfield(data,'Ft_HiRes_Data')
+data.Ft_HiRes_Data=[];
+end
+
 forceCH0=data.FD_Data.Force_Channel_0__pN_.data;
 forceCH1=data.FD_Data.Force_Channel_1__pN_.data;
 time=data.FD_Data.Time__ms_.data;
@@ -64,7 +68,11 @@ for iStretch=1:stretches
     [~, start_real_times_index(iStretch)] = min(abs(time - start_times(iStretch)));
     if stretches ==retractions
         [~, end_real_times_index(iStretch)] = min(abs(time - end_times(iStretch)));
-    else 
+    else
+        if iStretch < stretches
+            [~, end_real_times_index(iStretch)] = min(abs(time - end_times(iStretch)));
+        else end_real_times_index(iStretch) = length(time);
+        end
     end
     force.x{iStretch} = forceCH1( [start_real_times_index(iStretch):end_real_times_index(iStretch)] );
     force.y{iStretch} = forceCH0( [start_real_times_index(iStretch):end_real_times_index(iStretch)] );
@@ -139,3 +147,4 @@ if strcmp(answer{1},'NO')
 else save(strcat(answer{1},'\workspace_',filefolder));
 end
 end
+close all

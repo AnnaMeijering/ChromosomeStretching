@@ -20,6 +20,10 @@ beadbeaddist = ReadBeadtrackingTextFile( filepath2 );
 
 %% Obtain all relevant input from datafiles or ask user for input
 % trackingmode = data.FD_Data.Props.Tracking_Mode;
+if  isfield(data,'Ft_HiRes_Data')
+data.Ft_HiRes_Data=[];
+end
+
 forceCH0=data.FD_Data.Force_Channel_0__pN_.data;
 forceCH1=data.FD_Data.Force_Channel_1__pN_.data;
 time=data.FD_Data.Time__ms_.data;
@@ -33,8 +37,8 @@ gitinfo=getGitInfo();
     dims = [1 35];
     definput = {'0.05','1'};
     answer = inputdlg(prompt,title,dims,definput);
-    pulling_speed=str2num(answer{1});
-    sample_age = str2num(answer{2});
+    pulling_speed=str2double(answer{1});
+    sample_age = str2double(answer{2});
 
 % Make structures that contain all the mark comments and times
 marks={};
