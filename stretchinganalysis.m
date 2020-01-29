@@ -1,8 +1,15 @@
 % StretchingAnalysis
 clear
 
-[file1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms',...
+[filename1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms',...
     'Select .tdms file','MultiSelect','on');
+
+if ischar(filename1)
+    file1{1}=filename1;
+else
+    file1=filename1;
+end
+
 NFiles = length(file1);
 
 for iF=1:NFiles
@@ -15,13 +22,20 @@ filepath2=erase(filepath1,'.tdms');
 filepath2=strcat(filepath2,'.img');
 [file2,path2] = uigetfile(strcat(filepath2,'\*txt'),'Select bead tracking data');
 filepath2 = strcat(path2,file2);
-beadbeaddist = ReadBeadtrackingTextFile( filepath2 );
+[beadbeaddist,bead1,bead2] = ReadBeadtrackingTextFile( filepath2 );
 
 
 %% Obtain all relevant input from datafiles or ask user for input
 % trackingmode = data.FD_Data.Props.Tracking_Mode;
 if  isfield(data,'Ft_HiRes_Data')
 data.Ft_HiRes_Data=[];
+end
+
+if bead1(1)<bead2(1)
+    fixedpos=bead1;
+    movpos=bead2;
+else fixedpos=bead2;
+    movpos=bead1;
 end
 
 forceCH0=data.FD_Data.Force_Channel_0__pN_.data;
@@ -54,6 +68,11 @@ stretches = sum(startFDindices);
 retractions = sum(endFDindices);
 start_times=cell2mat(marks.time(startFDindices));
 end_times=cell2mat(marks.time(endFDindices));
+
+if stretches<retractions
+   stretches=stretches+1;
+   start_times=horzcat([1],start_times);
+end
 
 %% Find index in real time array that corresponds to start and end time of
 % FD curves. The exact times from the marks do not correspond to the time
@@ -108,13 +127,13 @@ end
 
 %% Select user ROI
 % 
-figure
-subplot(2,1,1);
-plot(time,forceCH1)
-vline(start_times,'g')
-
-subplot(2,1,2);
-plot(time,interbeaddist)
+% figure
+% subplot(2,1,1);
+% plot(time,forceCH1)
+% vline(start_times,'g')
+% 
+% subplot(2,1,2);
+% plot(time,interbeaddist)
 % [xtimes,yforces]= ginput(100);
 
 %% Determine closest starting points and end points to analyse
