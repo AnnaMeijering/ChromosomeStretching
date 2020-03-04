@@ -1,7 +1,7 @@
 %% Analysis of multiple stretching curves
 
 clear
-[filename,path]=uigetfile('D:\DataAnalysis\Chromavision\Emma\Selection_NoRuptures\*.mat',...
+[filename,path]=uigetfile('D:\DataAnalysis\Chromavision\TOPIIdegrons\*.mat',...
     'Select the INPUT DATA FILE');
 filepath=strcat(path,filename);
 load(filepath);
@@ -173,28 +173,89 @@ for iFile=1:NumFiles
 % ylim([-50 400])
 % %xlim([2 5])
 
-colour='kkkrrrrrrrkkkrrrrrrrrrrrrrrrr';
+colour='kr';
+condition={'Control','Degraded'};
+
+for k=1:NumFiles
+    treated(k)=info{k}{3};
+
+    grouping{k}=condition{treated(k)+1};
+    for m=1:length(FD.forces{k})-2
+    FD.forcedif{k}(m)=FD.forces{k}(m+2)-FD.forces{k}(m);
+    FD.distdif{k}(m)=FD.distances{k}(m+2)-FD.distances{k}(m);
+    end
+    
+    ibreak{k}=find(FD.forcedif{k}<-1.5);
+    iibreak{k}=diff(ibreak{k});
+    double_ibreaks{k}=find(iibreak{k}==1)+1;
+    ibreak{k}(double_ibreaks{k})=[];
+    numbreak(k)=length(ibreak{k});
+    if numbreak(k)>25
+        numbreak(k)=0;
+        numbreak_outliers(k)=numbreak(k);
+        ibreak{k}=[];
+    end
+    
+    breakforce{k}=FD.forces{k}(ibreak{k});
+    breakdif{k}=FD.forcedif{k}(ibreak{k});
+    
+end
+    icontrol=find(treated==0);
+    idegraded=find(treated==1);
+    breakdif_control=[];
+    breakdif_degraded=[];
+    breakforce_control=[];
+    breakforce_degraded=[];
+    
+    for i=icontrol;
+        breakdif_control=[breakdif_control breakdif{i}];
+        breakforce_control=[breakforce_control breakforce{i}];
+    end
+    for i=idegraded;
+        breakdif_degraded=[breakdif_degraded breakdif{i}];
+        breakforce_degraded=[breakforce_degraded breakforce{i}];
+    end
+    
+    breakdifs=horzcat(breakdif_control,breakdif_degraded);
+    breakforces=horzcat(breakforce_control,breakforce_degraded);
+    g_control=repmat({'Control'},1,length(breakdif_control));
+    g_degraded=repmat({'Degraded'},1,length(breakdif_degraded));
+    g=[g_control, g_degraded];
+
+figure
+boxplot(numbreak,grouping)
+title('Number of rupture events during first stretch')
+
+figure
+boxplot(breakdifs,g)
+title('Size of rupture events during first stretch')
+
+figure
+boxplot(breakforces,g)
+title('Force at which rupture events take place during first stretch')
+
+
 figure
 for k=1:NumFiles
-    plot(FD.distances{k},FD.forces{k},colour(k))
+    plot(FD.distances{k},FD.forces{k},colour(treated(k)+1))
     hold on
 end
 ylabel('Force (pN)')
 xlabel('Distance (um)')
 ylim([-30 350])
-xlim([1 13])
+xlim([0 13])
 
 
 
 figure
 for k=1:NumFiles
-    plot(FD.distscaled{k},FD.forces{k},colour(k))
+    plot(FD.distscaled{k},FD.forces{k})
     hold on
 end
 ylabel('Force (pN)')
 xlabel('Strain')
 ylim([-30 350])
-xlim([-0.5 0.3])
+xlim([-0.8 0.3])
 
 figure
 hist(ChromoLength)

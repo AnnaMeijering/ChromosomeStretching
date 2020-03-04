@@ -25,6 +25,17 @@ function [force, distance, info, NOsel]=userselFDcurve(filepath)
     force = cell2mat(force.x(index));
     info{1}=pulling_speed;
     info{2}=sample_age;
+    if ~exist('TOPIIdegraded','var')
+        
+    prompt = {'TOPII degraded? 1/0'};
+    title = 'Input';
+    dims = [1 35];
+    definput = {'0'};
+    answer = inputdlg(prompt,title,dims,definput);
+    TOPIIdegraded = int16(str2double(answer{1}));
+        
+    else info{3}=TOPIIdegraded;
+    end
     end
 
 end

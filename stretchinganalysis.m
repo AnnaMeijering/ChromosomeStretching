@@ -1,7 +1,7 @@
 % StretchingAnalysis
 clear
 
-[filename1,path] = uigetfile('Z:\users\Emma\F-trap DATA raw\*.tdms',...
+[filename1,path] = uigetfile('Z:\users\Anna\TOPIIdegrons\*.tdms',...
     'Select .tdms file','MultiSelect','on');
 
 if ischar(filename1)
@@ -46,13 +46,14 @@ beaddiam=data.FD_Data.Props.Bead_Diameter__um_ ;
 interbeaddist=beadbeaddist-beaddiam;
 gitinfo=getGitInfo();
 
-    prompt = {'Enter pulling speed in um/s:','Enter sample age in days:'};
+    prompt = {'Enter pulling speed in um/s:','Enter sample age in days:','TOPII degraded? 1/0'};
     title = 'Input';
     dims = [1 35];
-    definput = {'0.05','1'};
+    definput = {'0.05','1','0'};
     answer = inputdlg(prompt,title,dims,definput);
     pulling_speed=str2double(answer{1});
     sample_age = str2double(answer{2});
+    TOPIIdegraded = str2double(answer{3});
 
 % Make structures that contain all the mark comments and times
 marks={};
@@ -159,7 +160,7 @@ end
 prompt = {'If you want to save the analyzed data, please put filepath here. Otherwise write NO.'};
     title = 'Input';
     dims = [1 100];
-    definput = {'D:\DataAnalysis\Chromavision\Emma'};
+    definput = {'D:\DataAnalysis\Chromavision\TOPIIdegrons'};
     answer = inputdlg(prompt,title,dims,definput);
     
 if strcmp(answer{1},'NO')

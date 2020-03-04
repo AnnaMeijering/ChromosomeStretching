@@ -6,7 +6,7 @@ else Norigfiles=0;
 end
 
 
-[filenames1,paths]=uigetfile('D:\DataAnalysis\Chromavision\Emma\Selection_NoRuptures\*.mat',...
+[filenames1,paths]=uigetfile('D:\DataAnalysis\Chromavision\TOPIIdegrons\*.mat',...
     'Select the INPUT DATA FILE(s)','MultiSelect','on');
 
 if ischar(filenames1)

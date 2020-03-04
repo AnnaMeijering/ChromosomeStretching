@@ -34,8 +34,8 @@ xlabel('Time (s)')
 ylabel('Relative length change')
 hold off
 
-MeanIntensities=[678.586 760.331 881.618 605.978 719.299];
+MeanIntensities=[356.718 448.955 332.869 347.875 361.501 353.975 420.551 375.700 351.220 321.831 321.693];
 figure
-scatter(MeanIntensities-267.312,Xtotaldiffrel)
+scatter(MeanIntensities-272.353,Xtotaldiffrel)
 xlabel('Histone intensity (a.u.)')
 ylabel('Relative extension')
