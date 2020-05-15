@@ -6,10 +6,14 @@ function [force, distance, info, NOsel]=userselFDcurve(filepath)
     subplot(2,1,1);
     plot(time,forceCH1)
     vline(start_times,'g')
+    sgt=sgtitle(filepath);
+    sgt.FontSize=10;
+    
 
     subplot(2,1,2);
     plot(time,interbeaddist)
     [xtimes,~]= ginput(1);
+    
     close
     
     if isempty(xtimes)
@@ -33,7 +37,7 @@ function [force, distance, info, NOsel]=userselFDcurve(filepath)
     definput = {'0'};
     answer = inputdlg(prompt,title,dims,definput);
     TOPIIdegraded = int16(str2double(answer{1}));
-        
+        info{3}=TOPIIdegraded;
     else info{3}=TOPIIdegraded;
     end
     end

@@ -164,7 +164,7 @@ prompt = {'If you want to save the analyzed data, please put filepath here. Othe
     answer = inputdlg(prompt,title,dims,definput);
     
 if strcmp(answer{1},'NO')
-else save(strcat(answer{1},'\workspace_',filefolder));
+else save(strcat(answer{1},'\workspace_',filefolder,'.mat'));
 end
 end
 close all

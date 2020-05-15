@@ -1,5 +1,5 @@
 clear
-[filenames,paths]=uigetfile('D:\DataAnalysis\Chromavision\Emma\*.mat',...
+[filenames,paths]=uigetfile('D:\DataAnalysis\Chromavision\Emma\forcedrop_analysis\ForcedropfilesCombiTOPII\CombiWithoutTOPIItreated\*.mat',...
     'Select the INPUT DATA FILE');
 
 filepath=strcat(paths,filenames);
@@ -24,7 +24,7 @@ load(filepath);
     [xtimes,yforces]= ginput;
     close
     
-    colours=['k' 'g' 'b' 'c' 'm' 'r' 'y'];
+    colours=['k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm'];
     
 for i=1:length(xtimes)   
     index=find(abs(start_times-xtimes(i)) == min(abs(start_times-xtimes(i))));
@@ -35,26 +35,37 @@ for i=1:length(xtimes)
     
 end
 
+% figure
+% subplot(2,2,1)
+% for k=1:length(xtimes)
+%     plot(t_values{k},d_values{k},colours(k))
+%     hold on
+% end
+% xlabel('Time')
+% ylabel('Distance (um)')
+% hold off
+% 
+% subplot(2,2,2)
+% for k=1:length(xtimes)
+%     plot(t_values{k},f_values{k},colours(k))
+%     hold on
+% end
+% xlabel('Time')
+% ylabel('Force (pN)')
+% hold off
+% 
+% subplot(2,2,[3 4])
+% for k=1:length(xtimes)
+%     plot(d_values{k},f_values{k},colours(k))
+%     hold on
+% end 
+% xlabel('Distance (um)')
+% ylabel('Force (pN)')
+% hold off
+%     sgt=sgtitle(filenames);
+%     sgt.FontSize=10;
+
 figure
-subplot(2,2,1)
-for k=1:length(xtimes)
-    plot(t_values{k},d_values{k},colours(k))
-    hold on
-end
-xlabel('Time')
-ylabel('Distance (um)')
-hold off
-
-subplot(2,2,2)
-for k=1:length(xtimes)
-    plot(t_values{k},f_values{k},colours(k))
-    hold on
-end
-xlabel('Time')
-ylabel('Force (pN)')
-hold off
-
-subplot(2,2,[3 4])
 for k=1:length(xtimes)
     plot(d_values{k},f_values{k},colours(k))
     hold on
@@ -62,5 +73,3 @@ end
 xlabel('Distance (um)')
 ylabel('Force (pN)')
 hold off
-    sgt=sgtitle(filenames);
-    sgt.FontSize=10;

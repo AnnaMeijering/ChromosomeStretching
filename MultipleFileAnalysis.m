@@ -30,17 +30,18 @@ for iFile=1:NumFiles
 
      fd = FdData('names', FD.forces{iFile}, FD.distances{iFile}, FD.times{iFile});
      fd1=fd.subset('f',[-Inf 300]);
-     FD.fit{iFile} = fitfd(fd1,'model','network','noTrim','lBounds',[0 0 0.001 0.000000001],'uBounds',[1000 10000 10000000 1000]); %Lp Lc S Fscale
+     %FD.fit{iFile} = fitfd(fd1,'model','network','noTrim','lBounds',[0 0 1266 0.0001],'uBounds',[1000 100 1266 10]); %Lp Lc S Fscale
+     FD.fit{iFile} = fitfd(fd1,'model','odijk-f0','noTrim','lBounds',[1 1 0],'uBounds',[100 20 10000]); %Lp Lc S
+     
      Lc(iFile)=FD.fit{iFile}.Lc;
      Lp(iFile)=FD.fit{iFile}.Lp;
      Smod(iFile)=FD.fit{iFile}.S;
-     Fscale(iFile)=FD.fit{iFile}.Fscale;
+     %Fscale(iFile)=FD.fit{iFile}.Fscale;
+     Fscale(iFile)=1;
      Fzero(iFile)=FD.fit{iFile}.F0;
-     %plotfdfit(fd1,FD.fit{iFile})
+     plotfdfit(fd1,FD.fit{iFile})
      
      FD.distscaled{iFile}=(FD.distances{iFile}-Lc(iFile))/Lc(iFile);
-    
-    
     
     % In order to determine the point of highest curvature we want to take
     % the second derivative. First we make an averaged array, since there
@@ -97,9 +98,7 @@ for iFile=1:NumFiles
     else MaxCurv{iFile}=dAvg(locs{iFile});
     end
     
-    end
-
-
+end
 
 % kT=4.114;
 % Lp=5; %50 for dsDNA
@@ -224,16 +223,15 @@ end
 
 figure
 boxplot(numbreak,grouping)
-title('Number of rupture events during first stretch')
+title('Number of rupture events')
 
 figure
 boxplot(breakdifs,g)
-title('Size of rupture events during first stretch')
+title('Size of rupture events')
 
 figure
 boxplot(breakforces,g)
-title('Force at which rupture events take place during first stretch')
-
+title('Force at which rupture events take place')
 
 figure
 for k=1:NumFiles
@@ -249,7 +247,7 @@ xlim([0 13])
 
 figure
 for k=1:NumFiles
-    plot(FD.distscaled{k},FD.forces{k})
+    plot(FD.distscaled{k},FD.forces{k},colour(treated(k)+1))
     hold on
 end
 ylabel('Force (pN)')
@@ -258,23 +256,23 @@ ylim([-30 350])
 xlim([-0.8 0.3])
 
 figure
-hist(ChromoLength)
+histogram(ChromoLength)
 xlabel('Chromosome length (um)')
 ylabel('Frequency')
 
 figure
-hist(ChromoSlope)
-xlabel('Stretch stiffness (pN/um)')
+histogram(ChromoSlope)
+xlabel('Stretch steepness at highest curvature (pN/um)')
 ylabel('Frequency')
 
 figure
-hist(ChromoForce)
+histogram(ChromoForce)
 xlabel('Force at highest curvature (pN)')
 ylabel('Frequency')
 
 figure
 scatter(ChromoLength,ChromoSlope)
-ylabel('Stretch stiffness (pN/um)')
+ylabel('Stretch steepness at highest curvature (pN/um)')
 xlabel('Distance (um)')
 
 figure
