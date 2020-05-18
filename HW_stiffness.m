@@ -11,7 +11,7 @@ d = beadbeaddist*1000; % nm
 f = forceCH1; % pN
 
 %%% select curve to analyse
-figure
+figure()
 plot(f)
 title('select the force distance curve you want to analyze') 
 xlabel('index')
@@ -22,16 +22,20 @@ close
 %%% fit data with polynomial of high degree 
 pf = polyfit(ds,fs,10);  %10th degree
 ff = polyval(pf,ds);
+figure()
 plot(ds,fs,'o')
 hold on
 plot(ds,ff,'LineWidth',2)
-legend('Data','Fit')
+n_smooth = ceil(length(ds)/15); % calculate how many points are used for smoothing
+plot(smooth(ds,n_smooth),smooth(fs,n_smooth),'LineWidth',2)
+
+legend('Data','Fit','Smoothed data')
 xlabel('Distance / nm')
 ylabel('Force / pN')
 
 %%% stiffness from nummerical differentiation as a comparison (heavily
 %%% smooth data)
-k_num =  diff(smooth(fs,1001))./diff(smooth(ds,1001)); %spring constant in pN/nm
+k_num =  diff(smooth(fs,n_smooth))./diff(smooth(ds,n_smooth)); %spring constant in pN/nm
 k_num(k_num>1e4 | k_num<-1000) = NaN;
 f_num = fs(2:end);
 
