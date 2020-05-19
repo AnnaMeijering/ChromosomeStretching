@@ -28,8 +28,9 @@ for iFile=1:NumFiles
 
     FD.times{iFile} = 1:length(FD.forces{iFile});
     
-    [res{iFile},res2{iFile}]=HW_stiffness(FD.distances{iFile},FD.forces{iFile});
-
+    [res{iFile},res2{iFile},fprime{iFile},fofd{iFile}]=HW_stiffness(FD.distances{iFile},FD.forces{iFile});
+     pwl(iFile) = res{iFile}.b;
+     pwl2(iFile) = res2{iFile}.b;
      fd = FdData('names', FD.forces{iFile}, FD.distances{iFile}, FD.times{iFile});
      fd1=fd.subset('f',[-Inf 300]);
      %FD.fit{iFile} = fitfd(fd1,'model','network','noTrim','lBounds',[0 0 1266 0.0001],'uBounds',[1000 100 1266 10]); %Lp Lc S Fscale
@@ -178,8 +179,11 @@ colour='kr';
 condition={'Control','Degraded'};
 
 for k=1:NumFiles
-    treated(k)=info{k}{3};
-
+    if length(info{k}) == 3
+        treated(k)=info{k}{3};
+    else 
+        treated(k) = 0;
+    end
     grouping{k}=condition{treated(k)+1};
     for m=1:length(FD.forces{k})-2
     FD.forcedif{k}(m)=FD.forces{k}(m+2)-FD.forces{k}(m);
