@@ -27,6 +27,8 @@ for iFile=1:NumFiles
     %FD.xdeflection{iFile}=xdeflection;
 
     FD.times{iFile} = 1:length(FD.forces{iFile});
+    
+    [res{iFile},res2{iFile}]=HW_stiffness(FD.distances{iFile},FD.forces{iFile});
 
      fd = FdData('names', FD.forces{iFile}, FD.distances{iFile}, FD.times{iFile});
      fd1=fd.subset('f',[-Inf 300]);
