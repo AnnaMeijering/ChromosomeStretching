@@ -235,14 +235,15 @@ figure
 boxplot(breakforces,g)
 title('Force at which rupture events take place')
 
+colour='kr';
 figure
 for k=1:NumFiles
-    plot(FD.distances{k},FD.forces{k},colour(treated(k)+1))
+    plot(FD.distances{k},FD.forces{k},colour(info{k}{3}+1))
     hold on
 end
 ylabel('Force (pN)')
 xlabel('Distance (um)')
-ylim([-30 350])
+ylim([-50 350])
 xlim([0 13])
 
 

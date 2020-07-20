@@ -1,12 +1,14 @@
 clear
-[filenames,paths]=uigetfile('D:\DataAnalysis\Chromavision\Emma\forcedrop_analysis\ForcedropfilesCombiTOPII\CombiWithoutTOPIItreated\*.mat',...
+[filenames,paths]=uigetfile('D:\DataAnalysis\Chromavision\TOPIIdegrons\Salt experiments\*.mat',...
     'Select the INPUT DATA FILE');
 
 filepath=strcat(paths,filenames);
 load(filepath);
 
 % User selects the stretching curve that should be analysed
-    figure
+ 
+figure
+set(gcf, 'Position',  [100, 100, 1000, 1000])   
     subplot(2,1,1);
     plot(time,forceCH1)
     ylabel('Force (pN)')
@@ -24,7 +26,7 @@ load(filepath);
     [xtimes,yforces]= ginput;
     close
     
-    colours=['k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm'];
+    colours=['k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm' 'y' 'y' 'k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm' 'y' 'y'];
     
 for i=1:length(xtimes)   
     index=find(abs(start_times-xtimes(i)) == min(abs(start_times-xtimes(i))));
