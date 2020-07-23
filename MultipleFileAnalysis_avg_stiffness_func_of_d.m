@@ -10,12 +10,9 @@ close all
 
 lb = 20;
 ub = 200;
-f_ax = [0.1:0.1:300];
+d_ax = [1e3:10:1e4];
 
-k_topo = [];
-k_norm = [];
-k1_topo = [];
-k1_norm = [];
+k_all = zeros(NumFiles, length(d_ax));
 
 for iFile=1:NumFiles
     clear dAvg fAvg Forceder1 Forceder2
@@ -45,36 +42,20 @@ for iFile=1:NumFiles
     fprime = polyder(fofd);
     k =  polyval(fprime,d);
 
-    % interpolation for averages
-    [~,i] = sort(f);
-    [f_un,ia,~] = unique(f(i));
-    k_s = k(i);
-    k_un = k_s(ia);
-    k_int = interp1(f_un,k_un,f_ax);
-    
     %%% plot results
     figure(1)
-    if info{iFile}{3} == 1
-        plot(d,f,'Color',[0.8 0.6 0.6])
-        
-    elseif info{iFile}{3} == 0
-        plot(d,f,'Color',[0.6 0.6 0.8])
-        k_norm = [k_norm ; k_int]
-    end
+    %loglog(f_num,k_num,'Color',[0.8 0.8 0.8])
     hold on
     figure(2)
-    if info{iFile}{3} == 1
-        plot(f,k,'Color',[0.8 0.6 0.6])
-        k_topo = [k_topo ; k_int];
-        k1_topo = [k1_topo; nanmean(k(f<5))];
-    elseif info{iFile}{3} == 0
-        plot(f,k,'Color',[0.6 0.6 0.8])
-        
-        k1_norm = [k1_norm; nanmean(k(f<5))];
-    end
+    loglog(d,k,'Color',[0.8 0.8 0.8])
     hold on
     
-
+    [~,i] = sort(d);
+    [d_un,ia,~] = unique(d(i));
+    k_s = k(i);
+    k_un = k_s(ia);
+    k_int = interp1(d_un,k_un,d_ax);
+    k_all(iFile,:) = k_int;
     
     %%% now select data for fit
     %%%[~, fs, ks] = selectdata('SelectionMode', 'Rect
@@ -93,14 +74,9 @@ for iFile=1:NumFiles
 end
 
 figure(2)
-k_avg = nanmean(k_topo);
-
-plot(f_ax, k_avg,'r','LineWidth',2)
-res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
-plot(res)
-k_avg = nanmean(k_norm);
-plot(f_ax, k_avg,'b','LineWidth',2)
-res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
+k_avg = nanmean(k_all);
+plot(d_ax, k_avg,'b','LineWidth',2)
+%res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
 plot(res)
 legend off
 xlim([1 500])
