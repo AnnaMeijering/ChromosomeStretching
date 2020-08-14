@@ -42,7 +42,7 @@ for iFile=1:NumFiles
     [~,idx_0] = min(abs(f-f0));
     idx_0 = idx_0(1); % if there are multiple minima
     
-    %%% measure initial stiffness around zero force
+    %%% measure initial stiffness around zero elongation
     d_ = d(d>d(idx_0)-0.05 & d<d(idx_0)+0.05);
     f_ = f(d>d(idx_0)-0.05 & d<d(idx_0)+0.05);
     
