@@ -1,4 +1,4 @@
-function [res,k_num,k_ubound,ks_mean]=HW_stiffness_version2(d,f,f_lbound,f_ubound)
+function [res,k_num,k_model,ks_mean,k_model_low,l_chrom,l_index]=HW_stiffness_version2(d,f,f_lbound,f_ubound,k_threshold)
 
 %%% Ddetermine the stiffness and fit the stiffness as a
 %%% function of the force with a powerlaw
@@ -12,42 +12,55 @@ d=d*1000; % nm
  n_smooth = ceil(length(d)/15); % calculate how many points are used for smoothing
 % plot(smooth(d,n_smooth),smooth(f,n_smooth),'LineWidth',2)
 
-legend('Data','Smoothed data')
-xlabel('Distance / nm')
-ylabel('Force / pN')
+% legend('Data','Smoothed data')
+% xlabel('Distance / nm')
+% ylabel('Force / pN')
 
 %%% stiffness from nummerical differentiation as a comparison (heavily
 %%% smooth data)
-k_num =  diff(smooth(f,n_smooth))./diff(smooth(d,n_smooth)); %spring constant in pN/nm
-k_num(k_num>1e4 | k_num<-1000) = NaN;
-f_num = f(2:end);
+k_n =  diff(smooth(f,n_smooth))./diff(smooth(d,n_smooth)); %spring constant in pN/nm
+k_n(k_n>1e4 | k_n<-1000) = NaN;
+f_n = f(2:end);
+d_n = d(2:end);
+
+k_num = k_n(~isnan(k_n)' & ~isnan(f_n));
+f_num = f_n(~isnan(k_n)' & ~isnan(f_n));
+d_num = d_n(~isnan(f_n) & ~isnan(d_n));
+[l_chrom, l_index]=length_from_stiffness(d_num./1000,f_num,k_num,k_threshold);
 
 index_lbound=find(f_num>f_lbound);
+index_mbound=find(f_num>(f_ubound-50));
 index_ubound=find(f_num>f_ubound);
 if isempty(index_lbound)
     index_lbound=length(f_num)-500;
+    index_mbound=length(f_num)-50;
     index_ubound=length(f_num);
 elseif isempty(index_ubound)
+    index_mbound=length(f_num)-50;
     index_ubound=length(f_num);
 end
+
+dss=d_num(index_mbound(1):index_ubound(1))';
+fss=f_num(index_mbound(1):index_ubound(1))';
+
+    l_index_0=l_index-100;
+    if l_index_0<0
+        l_index_0=1;
+    end
+
+
+dl=d_num(l_index_0:l_index)';
+fl=f_num(l_index_0:l_index)';
 
 fs=f_num(index_lbound(1):index_ubound(1))';
 ks=k_num(index_lbound(1):index_ubound(1));
-k_ubound=nanmean(ks(end-20:end));
+
 ks_mean=nanmean(ks);
 
 % I fit both the numerical stiffness and the polynomial stiffness
-res = fit(fs(fs>0), ks(fs>0),'power1'); %fit to smoothened data
-
-%%% plot the final results
-% figure
-% loglog(f(2:end),k_num,'b')
-% hold on
-% plot(res)
-% ylabel('Stiffness / pN/nm')
-% xlabel('Force / pN')
+res = fit(fs(fs>0), ks(fs>0),'power1'); %powerlaw fit to KF between lower- and upperbound force
+k_model= fit(dss(fss>0), fss(fss>0),'poly1'); %linear fit to FD around upperbound force
+k_model_low=fit(dl,fl,'poly1');
 
 end
 
-% save final results 
-%save(['stiffness_' file_name(1:25)],'res','res2','f_num','k_num','f','k')

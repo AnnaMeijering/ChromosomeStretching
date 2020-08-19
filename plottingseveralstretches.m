@@ -1,5 +1,5 @@
 clear
-[filenames,paths]=uigetfile('D:\DataAnalysis\Chromavision\TOPIIdegrons\Salt experiments\*.mat',...
+[filenames,paths]=uigetfile('D:\DataAnalysis\Chromavision\Emma\Selection_NoRuptures\subselection\ThirdStretchOver300pN_alsofirststretches\*.mat',...
     'Select the INPUT DATA FILE');
 
 filepath=strcat(paths,filenames);
@@ -26,7 +26,7 @@ set(gcf, 'Position',  [100, 100, 1000, 1000])
     [xtimes,yforces]= ginput;
     close
     
-    colours=['k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm' 'y' 'y' 'k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm' 'y' 'y'];
+    colours=['k' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm' 'y' 'y' 'k' 'k' 'b' 'b' 'r' 'r' 'g' 'g' 'c' 'c' 'm' 'm' 'y' 'y'];
     
 for i=1:length(xtimes)   
     index=find(abs(start_times-xtimes(i)) == min(abs(start_times-xtimes(i))));

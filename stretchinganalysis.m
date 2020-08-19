@@ -1,7 +1,7 @@
 % StretchingAnalysis
 clear
 
-[filename1,path] = uigetfile('G:\Chromavision\TOPIIdegrons\*.tdms',...
+[filename1,path] = uigetfile('G:\Chromavision\Emma\JAN-trap raw\20200305_HCTII6_top2A_untreated_F6_20200116\*.tdms',...
     'Select .tdms file','MultiSelect','on');
 
 if ischar(filename1)
@@ -49,7 +49,7 @@ gitinfo=getGitInfo();
     prompt = {'Enter pulling speed in um/s:','Enter sample age in days:','TOPII degraded? 1/0'};
     title = 'Input';
     dims = [1 35];
-    definput = {'0.1','28','1'};
+    definput = {'0.1','17','0'};
     answer = inputdlg(prompt,title,dims,definput);
     pulling_speed=str2double(answer{1});
     sample_age = str2double(answer{2});
@@ -160,7 +160,7 @@ end
 prompt = {'If you want to save the analyzed data, please put filepath here. Otherwise write NO.'};
     title = 'Input';
     dims = [1 100];
-    definput = {'D:\DataAnalysis\Chromavision\TOPIIdegrons\Salt experiments'};
+    definput = {'D:\DataAnalysis\Chromavision\Emma'};
     answer = inputdlg(prompt,title,dims,definput);
     
 if strcmp(answer{1},'NO')

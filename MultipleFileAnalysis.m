@@ -10,23 +10,15 @@ load(filepath);
 for iFile=1:NumFiles
     clear dAvg fAvg Forceder1 Forceder2
     
-%     % User selects deflection point and determines presence of plateau
-%     figure
-%     plot(FD.distances{iFile},FD.forces{iFile})
-%         prompt = {'Plateau or not? y/n'};
-%     title = 'Input';
-%     dims = [1 10];
-%     definput = {'y'};
-%     answer = inputdlg(prompt,title,dims,definput);
-%     if strcmp(answer{1},'y')
-%         plateau(iFile)=1;
-%     else plateau(iFile)=0;
-%     end
-%     close
-    
-    %FD.xdeflection{iFile}=xdeflection;
-
     FD.times{iFile} = 1:length(FD.forces{iFile});
+    
+f_lb=100;           %lowerbound value for stiffness fit
+f_ub=200;           %upperbound value for stiffness fit
+k_threshold=0.02;   %stiffness threshold for length determination
+[chrom{iFile}.datafit,chrom{iFile}.stiffness,chrom{iFile}.k_ubound,chrom{iFile}.ks_mean]...
+   = HW_stiffness_version2(FD.distances{iFile},FD.forces{iFile},f_lb,f_ub);        
+chrom{iFile}.length=length_from_stiffness(FD.distances{iFile}(2:end),FD.forces{iFile}(2:end),chrom{iFile}.stiffness,k_threshold);
+
     
     [res{iFile},res2{iFile},fprime{iFile},fofd{iFile}]=HW_stiffness(FD.distances{iFile},FD.forces{iFile});
      pwl(iFile) = res{iFile}.b;
@@ -239,28 +231,28 @@ figure
 boxplot(breakforces,g)
 title('Force at which rupture events take place')
 
-colour='kr';
-figure
-for k=1:NumFiles
-    plot(FD.distances{k},FD.forces{k},colour(info{k}{3}+1))
-    hold on
-end
-ylabel('Force (pN)')
-xlabel('Distance (um)')
-ylim([-50 350])
-xlim([0 13])
+% colour='kr';
+% figure
+% for k=1:NumFiles
+%     plot(FD.distances{k},FD.forces{k},colour(info{k}{3}+1))
+%     hold on
+% end
+% ylabel('Force (pN)')
+% xlabel('Distance (um)')
+% ylim([-50 350])
+% xlim([0 13])
 
 
 
-figure
-for k=1:NumFiles
-    plot(FD.distscaled{k},FD.forces{k},colour(treated(k)+1))
-    hold on
-end
-ylabel('Force (pN)')
-xlabel('Strain')
-ylim([-30 350])
-xlim([-0.8 0.3])
+% figure
+% for k=1:NumFiles
+%     plot(FD.distscaled{k},FD.forces{k},colour(treated(k)+1))
+%     hold on
+% end
+% ylabel('Force (pN)')
+% xlabel('Strain')
+% ylim([-30 350])
+% xlim([-0.8 0.3])
 
 figure
 histogram(ChromoLength)
@@ -305,3 +297,26 @@ xlabel('Distance (um)')
 %     hold on
 % end
 % hold off
+
+%%
+for iChrom=1:NumFiles
+ length(iChrom)=chrom{iChrom}.length;
+ stiffness(iChrom)=chrom{iChrom}.k_ubound;
+end
+
+figure
+scatter(length,stiffness,'filled')
+xlabel('Initial Chromosome length (um)')
+ylabel('Initial stiffness (pN/nm)')
+
+figure
+histogram(length)
+xlabel('Initial Chromosome length (um)')
+ylabel('Frequency')
+
+figure
+histogram(stiffness)
+xlabel('Initial stiffness (pN/nm)')
+ylabel('Frequency')
+
+
