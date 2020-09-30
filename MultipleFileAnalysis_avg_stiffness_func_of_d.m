@@ -47,7 +47,7 @@ for iFile=1:NumFiles
     %loglog(f_num,k_num,'Color',[0.8 0.8 0.8])
     hold on
     figure(2)
-    loglog(d,k,'Color',[0.8 0.8 0.8])
+    plot(d,k,'.-','Color',[0.8 0.8 0.8])
     hold on
     
     [~,i] = sort(d);
@@ -75,11 +75,11 @@ end
 
 figure(2)
 k_avg = nanmean(k_all);
-plot(d_ax, k_avg,'b','LineWidth',2)
+%plot(d_ax, k_avg,'b','LineWidth',2)
 %res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
-plot(res)
+%plot(res)
 legend off
-xlim([1 500])
-ylim([1e-2 10])
+%xlim([1 500])
+ylim([-1 5])
 xlabel('Force / pN')
 ylabel('Stiffness / pN/nm')

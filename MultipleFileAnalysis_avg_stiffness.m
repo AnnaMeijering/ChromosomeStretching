@@ -99,7 +99,8 @@ plot(f_ax, k_avg,'r','LineWidth',2)
 res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
 plot(res)
 k_avg = nanmean(k_norm);
-plot(f_ax, k_avg,'b','LineWidth',2)
+k_err = nanstd(k_norm);%/sqrt(length(k_norm(:,1)));
+errorbar(f_ax, k_avg,k_err,'b','LineWidth',2)
 res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
 plot(res)
 legend off
