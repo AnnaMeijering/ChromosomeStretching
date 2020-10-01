@@ -6,7 +6,7 @@
 filepath=strcat(path,filename);
 load(filepath);
 [~,NumFiles]=size(FD.distances);
-close all
+%close all
 f0 = 0
 f1 = 200
 
@@ -37,16 +37,7 @@ for iFile=1:NumFiles
     d = d_;
     
     
-    %%% find d where f is zero
-    if (~isempty(f(f>0))) && (~isempty(f(f<0)))
-    [~,idx_0] = min(abs(f-f0));
-    idx_0 = idx_0(1); % if there are multiple minima
-    
-    %%% measure initial stiffness around zero elongation
-    d_ = d(d>d(idx_0)-0.05 & d<d(idx_0)+0.05);
-    f_ = f(d>d(idx_0)-0.05 & d<d(idx_0)+0.05);
-    
-    res_0 = polyfit(d_,f_,1);
+ 
     
     %%% measure stiffness around 150 pN
     d_ = d(f>f1-25 & f<f1+25);
@@ -55,22 +46,34 @@ for iFile=1:NumFiles
     res_1 = polyfit(d_,f_,1);
         [~,idx_1] = min(abs(f-f1));
     idx_1 = idx_1(1); % if there are multiple minima
+    
+       %%% find d where f is zero
+ %   if (~isempty(f(f>0))) && (~isempty(f(f<0)))
+    [~,idx_0] = min(abs(f-f0));
+    idx_0 = idx_0(1); % if there are multiple minima
+    
+    %%% measure initial stiffness around zero elongation
+    d_ = d(d>d(idx_0)-0.05 & d<d(idx_0)+0.05);
+    f_ = f(d>d(idx_0)-0.05 & d<d(idx_0)+0.05);
+    
+    res_0 = polyfit(d_,f_,1);
 %     
 %     
 %     %%% plot results
 %     figure(1)
 %     hold on
+    x_p = [-0.5, 0.5];
     if info{iFile}{3} == 1
-        plot(d,f,'Color',[0.8 0.6 0.6])
-%         plot(d_,d_*res(1)+res(2),'r','LineWidth',1.)
+        plot(d-d(idx_0),f,'Color',[0.8 0.6 0.6])
+       % plot(x_p,x_p*res_0(1),'r','LineWidth',1.)
 % 
         k_topo_0 = [k_topo_0, res_0(1)/1000];
                 k_topo_1 = [k_topo_1, res_1(1)/1000];
         l_topo_0 = [l_topo_0, d(idx_0)];
                 l_topo_1 = [l_topo_1, d(idx_1)];
-    elseif info{iFile}{3} == 0
-        plot(d,f,'Color',[0.6 0.6 0.8])
-%         plot(d_,d_*res(1)+res(2),'b','LineWidth',1.)
+    else
+        plot(d-d(idx_0),f,'Color',[0.6 0.6 0.8])
+        % plot(x_p,x_p*res_0(1),'b','LineWidth',1.)
 
         k_norm_0 = [k_norm_0, res_0(1)/1000];
  
@@ -96,13 +99,13 @@ for iFile=1:NumFiles
 %     res2 = fit(f((f>lb) & (f<ub))', k((f>lb) & (f<ub))','power1');
     %%% plot the final results
 
-    end
+  % end
     
 end
 % xlim([0,0.2])
 
 ylabel('Force / pN')
-xlabel('Compression / µm')
+xlabel('Distance / µm')
 
 
 %%% plot of difference lengths
@@ -139,14 +142,14 @@ set(gca,'FontSize', 12,'linewidth',1.)
 figure
 
 group = [repmat(['k_norm_low'],length(k_norm_0),1);repmat(['k_topo_low'],length(k_topo_0),1);repmat(['k_norm_hgh'],length(k_norm_1),1);repmat(['k_topo_hgh'],length(l_topo_1),1)]
-data = [k_norm_0 ,k_topo_0, k_norm_1,k_topo_1];
+data = 1./[k_norm_0 ,k_topo_0, k_norm_1,k_topo_1];
 
 boxplot(data, group,'Widths',0.55,'Colors', [00.3 0.3 0.3])
 hold on
  set(gcf,'position',[10,10,500,350])
   set(findobj(gca,'type','line'),'linew',1.5)
   set(findobj(gcf,'LineStyle','--'),'LineStyle','-')
- ylabel('Stiffness / pN/nm','FontSize', 16)
+ ylabel('Compliance / nm/pN','FontSize', 16)
 set(gca,'FontSize', 12,'linewidth',1.)
 % 
 % xlabel('','FontSize', 20)
@@ -155,14 +158,14 @@ set(gca,'FontSize', 12,'linewidth',1.)
 % box on
 % hold on
  x_plot=ones(length(k_norm_0),1);
- scatter(x_plot(:),k_norm_0(:),20,'filled','MarkerFaceColor', [0. 0. 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ scatter(x_plot(:),1./k_norm_0(:),20,'filled','MarkerFaceColor', [0. 0. 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
 
  x_plot=2*ones(length(k_topo_0),1);
- scatter(x_plot(:),k_topo_0(:),20,'filled','MarkerFaceColor', [0.8 0 0.],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ scatter(x_plot(:),1./k_topo_0(:),20,'filled','MarkerFaceColor', [0.8 0 0.],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
  x_plot=3*ones(length(k_norm_1),1);
- scatter(x_plot(:),k_norm_1(:),20,'filled','MarkerFaceColor', [0. 0 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ scatter(x_plot(:),1./k_norm_1(:),20,'filled','MarkerFaceColor', [0. 0 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
  x_plot=4*ones(length(k_topo_1),1);
- scatter(x_plot(:),k_topo_1(:),20,'filled','MarkerFaceColor', [0.8 0 0],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ scatter(x_plot(:),1./k_topo_1(:),20,'filled','MarkerFaceColor', [0.8 0 0],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
  
  % 
 %print('Box_Marian.png','-dpng','-r600')
