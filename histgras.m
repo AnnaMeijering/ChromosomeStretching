@@ -46,6 +46,15 @@ xlabel('Compliance (nm/pN)')
 legend('HCT116 control','HCT116 +IAA')
 
 figure
+histogram(1./topii.stiffness(find(~topii.treated)),0:0.8:8,'facealpha',.5,'edgecolor','none')
+hold on
+histogram(1./topii.stiffness(find(topii.treated&topii.length<5)),0:0.8:8,'facealpha',.5,'edgecolor','none')
+histogram(1./topii.stiffness(find(topii.treated&topii.length>5)),0:0.8:8,'facealpha',.5,'edgecolor','none')
+ylabel('Frequency')
+xlabel('Compliance (nm/pN)')
+legend('HCT116 control','HCT116 +IAA (small)','HCT116 +IAA (long)')
+
+figure
 scatter(topii.length(find(~topii.treated)),1./topii.stiffness(find(~topii.treated)),'filled')
 hold on
 scatter(topii.length(find(topii.treated)),1./topii.stiffness(find(topii.treated)),'filled')

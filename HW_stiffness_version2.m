@@ -1,4 +1,4 @@
-function [res,k_num,k_model,ks_mean,k_model_low,l_chrom,l_index]=HW_stiffness_version2(d,f,f_lbound,f_ubound,k_threshold)
+function [res,k_num,k_model,ks_mean,k_model_low,l_chrom,l_index,f_num]=HW_stiffness_version2(d,f,f_lbound,f_ubound,k_threshold)
 
 %%% Ddetermine the stiffness and fit the stiffness as a
 %%% function of the force with a powerlaw
@@ -43,11 +43,11 @@ end
 dss=d_num(index_mbound(1):index_ubound(1))';
 fss=f_num(index_mbound(1):index_ubound(1))';
 
-    l_index_0=l_index-100;
-    if l_index_0<0
-        l_index_0=1;
-    end
-
+%     l_index_0=l_index-100;
+%     if l_index_0<0
+%         l_index_0=1;
+%     end
+l_index_0=1;
 
 dl=d_num(l_index_0:l_index)';
 fl=f_num(l_index_0:l_index)';

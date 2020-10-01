@@ -14,7 +14,7 @@ f_lb=100;           %lowerbound value for stiffness fit
 f_ub=200;           %upperbound value for stiffness fit
 k_threshold=0.02;   %stiffness threshold for length determination
 [chrom{iFile}.datafit,chrom{iFile}.stiffness,chrom{iFile}.k_model,chrom{iFile}.ks_mean,...
-    chrom{iFile}.k_model_low,chrom{iFile}.length, l_index(iFile)]...
+    chrom{iFile}.k_model_low,chrom{iFile}.length, l_index(iFile),chrom{iFile}.f_num]...
    = HW_stiffness_version2(FD.distances{iFile},FD.forces{iFile},f_lb,f_ub,k_threshold);        
 %[chrom{iFile}.length,index_l(iFile)]=length_from_stiffness(FD.distances{iFile}(2:end),FD.forces{iFile}(2:end),chrom{iFile}.stiffness,k_threshold);
 chrom{iFile}.k_ubound=chrom{iFile}.k_model.p1;
@@ -104,23 +104,23 @@ end
     g_degraded=repmat({'Degraded'},1,length(breakdif_degraded));
     g=[g_control, g_degraded];
 
-% figure
-% boxplot(numbreak,grouping)
-% title('Number of rupture events')
-% 
-% figure
-% boxplot(breakdifs,g)
-% title('Size of rupture events')
-% 
-% figure
-% boxplot(breakforces,g)
-% title('Force at which rupture events take place')
+figure
+boxplot(numbreak,grouping)
+title('Number of rupture events')
+
+figure
+boxplot(breakdifs,g)
+title('Size of rupture events')
+
+figure
+boxplot(breakforces,g)
+title('Force at which rupture events take place')
 
 
 
 %%
 for iChrom=1:NumFiles
- length(iChrom)=chrom{iChrom}.length;
+ lengths(iChrom)=chrom{iChrom}.length;
  stiffness(iChrom)=chrom{iChrom}.k_ubound;
  stiffness_low(iChrom)=chrom{iChrom}.k_model_low.p1;
 end
@@ -128,12 +128,12 @@ end
 
 
 figure
-scatter(length,stiffness,'filled')
+scatter(lengths,stiffness,'filled')
 xlabel('Initial Chromosome length (um)')
 ylabel('Initial stiffness (pN/nm)')
 
 figure
-histogram(length,0:0.5:6,'facealpha',.5,'edgecolor','none')
+histogram(lengths,0:0.5:6,'facealpha',.5,'edgecolor','none')
 xlabel('Initial Chromosome length (um)')
 ylabel('Frequency')
 
@@ -157,31 +157,31 @@ end
 
 
 figure
-scatter(length(find(~treated)),stiffness(find(~treated)),'filled')
+scatter(lengths(find(~treated)),stiffness(find(~treated)),'filled')
 hold on
-scatter(length(find(treated)),stiffness(find(treated)),'filled')
+scatter(lengths(find(treated)),stiffness(find(treated)),'filled')
 hold off
 
 figure
-histogram(length(find(~treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
+histogram(lengths(find(~treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
 hold on
-histogram(length(find(treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
+histogram(lengths(find(treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
 ylabel('Probability')
 xlabel('Length (µm)')
 legend('HCT116 control','HCT116 +IAA')
 
 figure
-histogram(length(find(~treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
+histogram(lengths(find(~treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
 hold on
-histogram(length(find(treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
+histogram(lengths(find(treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
 ylabel('Probability')
 xlabel('Length (µm)')
 legend('HCT116 control','HCT116 +IAA')
 
 figure
-histogram(stiffness(find(~treated&length<5)),0:0.1:3,'facealpha',.5,'edgecolor','none','Normalization','probability')
+histogram(stiffness(find(~treated&lengths<5)),0:0.1:3,'facealpha',.5,'edgecolor','none','Normalization','probability')
 hold on
-histogram(stiffness(find(treated&length<5)),0:0.1:3,'facealpha',.5,'edgecolor','none','Normalization','probability')
+histogram(stiffness(find(treated&lengths<5)),0:0.1:3,'facealpha',.5,'edgecolor','none','Normalization','probability')
 ylabel('Probability')
 xlabel('Length (µm)')
 legend('HCT116 control','HCT116 +IAA')
@@ -196,21 +196,33 @@ xlabel('Compliance (nm/pN)')
 legend('HCT116 control','HCT116 +4h Noc+Aux','HCT116 +2h Noc +2h Noc+Aux')
 
 figure
-histogram(1./stiffness_low(find(~treated)),0:25:500,'facealpha',.5,'edgecolor','none')
+histogram(1./stiffness_low(find(~treated)),0:30:300,'facealpha',.5,'edgecolor','none')
 hold on
-histogram(1./stiffness_low(find(treated(15:end))+14),0:25:500,'facealpha',.5,'edgecolor','none')
-histogram(1./stiffness_low(find(treated(1:14))),0:25:500,'facealpha',.5,'edgecolor','none')
+histogram(1./stiffness_low(find(treated&lengths<5)),0:30:300,'facealpha',.5,'edgecolor','none')
+histogram(1./stiffness_low(find(treated&lengths>5)),0:30:300,'facealpha',.5,'edgecolor','none')
 ylabel('Probability')
 xlabel('Compliance (nm/pN)')
-legend('HCT116 control','HCT116 +4h Noc+Aux','HCT116 +2h Noc +2h Noc+Aux')
+legend('HCT116 control','HCT116 +Aux (short)','HCT116 +Aux (long)')
 figure
-histogram(1./stiffness_low(find(~treated)),-500:25:500,'facealpha',.5,'edgecolor','none')
+histogram(1./stiffness_low(find(~treated)),-500:10:500,'facealpha',.5,'edgecolor','none')
 hold on
-histogram(1./stiffness_low(find(treated)),-500:25:500,'facealpha',.5,'edgecolor','none')
+histogram(1./stiffness_low(find(treated)),-500:10:500,'facealpha',.5,'edgecolor','none')
 ylabel('Probability')
 xlabel('Compliance (nm/pN)')
 legend('HCT116 control','HCT116 +Aux')
 
+ figure 
+boxplot(1./stiffness_low(stiffness_low>0), treated(stiffness_low>0),'Widths',0.55,'Colors', [00.3 0.3 0.3])
+hold on
+ set(gcf,'position',[10,10,500,350])
+  set(findobj(gca,'type','line'),'linew',1.5)
+  set(findobj(gcf,'LineStyle','--'),'LineStyle','-')
+ ylabel('Relative length change (high salt vs normal)','FontSize', 16)
+set(gca,'FontSize', 12,'linewidth',1.)
+ x_plot=ones(length(top2c),1);
+ scatter(x_plot(:),lengths_change_rel_salt(top2c),20,'filled','MarkerFaceColor', [0. 0. 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ x_plot=2*ones(length(top2d),1);
+ scatter(x_plot(:),lengths_change_rel_salt(top2d),20,'filled','MarkerFaceColor', [0.8 0 0.],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
 
 
 figure
@@ -314,4 +326,13 @@ plot(d,fkl_plot{iFile},'b')
 hold on
 ylim([-50 300])
 xlim([-0.5 2])
+end
+
+
+
+figure
+for i=1:NumFiles
+    %SumF=chrom{1,i}.f_num+SumF;
+    loglog(chrom{1,i}.f_num,chrom{1,i}.stiffness,'color',[0,0,0]+0.01*i)
+    hold on
 end

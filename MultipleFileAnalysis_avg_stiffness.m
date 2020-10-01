@@ -26,8 +26,8 @@ for iFile=1:NumFiles
 
     d_ = d(~isnan(d) & ~isnan(f));
     f_ = f(~isnan(d) & ~isnan(f));
-    f = f_;
-    d = d_;
+    f = f_(1:end-7);
+    d = d_(1:end-7);
     %%% fit data with polynomial of high degree 
     d=d*1000; % nm
     fofd = polyfit(d,f,10);  %10th degree
@@ -54,7 +54,10 @@ for iFile=1:NumFiles
     
     %%% plot results
     figure(1)
-    if info{iFile}{3} == 1
+    if size(info{iFile},2)<3
+        plot(d,f,'Color',[0.6 0.6 0.8])
+        k_norm = [k_norm ; k_int]
+    elseif info{iFile}{3} == 1
         plot(d,f,'Color',[0.8 0.6 0.6])
         
     elseif info{iFile}{3} == 0
@@ -63,7 +66,11 @@ for iFile=1:NumFiles
     end
     hold on
     figure(2)
-    if info{iFile}{3} == 1
+    if size(info{iFile},2)<3
+                plot(f,k,'Color',[0.6 0.6 0.8])
+        
+        k1_norm = [k1_norm; nanmean(k(f<5))];
+    elseif info{iFile}{3} == 1
         plot(f,k,'Color',[0.8 0.6 0.6])
         k_topo = [k_topo ; k_int];
         k1_topo = [k1_topo; nanmean(k(f<5))];
@@ -94,10 +101,12 @@ end
 
 figure(2)
 k_avg = nanmean(k_topo);
-
+ if isempty(k_topo)
+ else
 plot(f_ax, k_avg,'r','LineWidth',2)
 res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
 plot(res)
+ end
 k_avg = nanmean(k_norm);
 plot(f_ax, k_avg,'b','LineWidth',2)
 res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');

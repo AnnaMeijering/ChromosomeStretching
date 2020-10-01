@@ -29,10 +29,15 @@
     plot ((time_jump{i}-time_jump{i}(1))/1000,force_jump_scaled_smoothed{i})
     hold on
     end
+    Exparray=exp(-(1/20).*(time_jump{17}-time_jump{17}(1))/1000);
+    plot((time_jump{17}-time_jump{17}(1))/1000,Exparray,'r')
     xlabel('Time (s)')
     ylabel('Relative force change')
     axis([0 120 -0.1 1])
     hold off
+    
+    
+    
     
     figure
     for i=2:NFiles

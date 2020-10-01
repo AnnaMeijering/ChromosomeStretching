@@ -1,4 +1,6 @@
-[Xcoords Ycoords Ntraces]=loadcoords();
+
+function [RelIntensities, Xtotaldiffrel,Xcontribution,orderedI,IntOrder]=fluorstretchinganalysis()
+[Xcoords Ycoords Ntraces background intensities]=loadcoords();
 
 for i=1:Ntraces
 starts(i)=min(Ycoords{i});
@@ -19,13 +21,15 @@ end
 xlabel('Time (s)')
 ylabel('Distance (px)')
 hold off
+TotalLengthChange=(Xtraces{Ntraces}(end)-Xtraces{Ntraces}(1))-(Xtraces{1}(end)-Xtraces{1}(1)); 
 
 figure
 for k=1:Ntraces-1
 Xdiffabs{k}=Xtraces{k+1}-Xtraces{k};
 Xdiffrel{k}=(Xdiffabs{k}-Xdiffabs{k}(1))/Xdiffabs{k}(1);
+Xtotaldiffabs(k)=Xdiffabs{k}(end)-Xdiffabs{k}(1);
 Xtotaldiffrel(k)=Xdiffrel{k}(end);
-    
+Xcontribution(k)=Xtotaldiffabs(k)/TotalLengthChange;
 plot(Tlist,Xdiffrel{k})
 hold on
 
@@ -34,8 +38,17 @@ xlabel('Time (s)')
 ylabel('Relative length change')
 hold off
 
-MeanIntensities=[356.718 448.955 332.869 347.875 361.501 353.975 420.551 375.700 351.220 321.831 321.693];
+if background<min(intensities)
+MeanIntensities=intensities-background;
+else 
+    MeanIntensities=intensities-min(intensities);
+end
+[~,orderedI]=sort(intensities);
+IntOrder=linspace(0,1,length(intensities));
+
+RelIntensities=MeanIntensities/sum(MeanIntensities);
 figure
-scatter(MeanIntensities-272.353,Xtotaldiffrel)
-xlabel('Histone intensity (a.u.)')
+scatter(RelIntensities,Xtotaldiffrel)
+xlabel('Relative H2B-eGFP intensity (a.u.)')
 ylabel('Relative extension')
+end

@@ -15,14 +15,16 @@ f_ub=200;           %upperbound value for stiffness fit
 k_threshold=0.02;   %stiffness threshold for length determination
 for iChrom=1:NumFiles
     for istretch=1:3
-        [chrom{iChrom}.datafit{istretch},chrom{iChrom}.stiffness{istretch},...
-            chrom{iChrom}.k_model{istretch},chrom{iChrom}.ks_mean{istretch}]...
+         [chrom{iChrom}.datafit{istretch},chrom{iChrom}.stiffness{istretch},...
+            chrom{iChrom}.k_model{istretch},chrom{iChrom}.ks_mean{istretch},...
+            chrom{iChrom}.k_model_low{istretch},chrom{iChrom}.length{istretch},...
+            chrom{iChrom}.l_index{istretch},chrom{iChrom}.f_num{istretch},]...
             = HW_stiffness_version2(chrom{iChrom}.dist{istretch},...
-            chrom{iChrom}.force{istretch},f_lb,f_ub);
+            chrom{iChrom}.force{istretch},f_lb,f_ub,k_threshold);
         chrom{iChrom}.k_ubound{istretch}=chrom{iChrom}.k_model{istretch}.p1;
         
-        chrom{iChrom}.length{istretch}=length_from_stiffness(...
-            chrom{iChrom}.dist{istretch}(2:end),chrom{iChrom}.force{istretch}(2:end),chrom{iChrom}.stiffness{istretch},k_threshold);
+        %chrom{iChrom}.length{istretch}=length_from_stiffness(...
+        %    chrom{iChrom}.dist{istretch}(2:end),chrom{iChrom}.force{istretch}(2:end),chrom{iChrom}.stiffness{istretch},k_threshold);
     end
 
     %Save stiffnesses and lengths in vectors for histograms and scatters
@@ -39,6 +41,7 @@ lengths_change_rel=(lengths_after-lengths_before)./lengths_before;
 stiffness_change_rel_salt=(stiffness_high-stiffness_before)./stiffness_before;
 stiffness_change_rel=(stiffness_after-stiffness_before)./stiffness_before;
 compliance_change_rel=(1./stiffness_after-1./stiffness_before)./(1./stiffness_before);
+compliance_change_rel_salt=(1./stiffness_high-1./stiffness_before)./(1./stiffness_before);
 
 
 for i=1:NumFiles
@@ -149,17 +152,17 @@ set(gca,'FontSize', 12,'linewidth',1.)
  scatter(x_plot(:),lengths_change_rel_salt(top2d),20,'filled','MarkerFaceColor', [0.8 0 0.],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
 
  figure 
-boxplot(compliance_change_rel, top2,'Widths',0.55,'Colors', [00.3 0.3 0.3])
+boxplot(compliance_change_rel_salt, top2,'Widths',0.55,'Colors', [00.3 0.3 0.3])
 hold on
  set(gcf,'position',[10,10,500,350])
   set(findobj(gca,'type','line'),'linew',1.5)
   set(findobj(gcf,'LineStyle','--'),'LineStyle','-')
- ylabel('Relative compliance change','FontSize', 16)
+ ylabel('Relative compliance change (high normal)','FontSize', 16)
 set(gca,'FontSize', 12,'linewidth',1.)
  x_plot=ones(length(top2c),1);
- scatter(x_plot(:),compliance_change_rel(top2c),20,'filled','MarkerFaceColor', [0. 0. 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ scatter(x_plot(:),compliance_change_rel_salt(top2c),20,'filled','MarkerFaceColor', [0. 0. 0.8],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
  x_plot=2*ones(length(top2d),1);
- scatter(x_plot(:),compliance_change_rel(top2d),20,'filled','MarkerFaceColor', [0.8 0 0.],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
+ scatter(x_plot(:),compliance_change_rel_salt(top2d),20,'filled','MarkerFaceColor', [0.8 0 0.],'MarkerFaceAlpha',0.7','jitter','on','jitterAmount',0.1);
 
  figure 
 boxplot(stiffness_change_rel_salt, top2,'Widths',0.55,'Colors', [00.3 0.3 0.3])
