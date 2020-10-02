@@ -6,7 +6,7 @@ filepath=strcat(paths,filenames);
 load(filepath);
 
 % User selects the stretching curve that should be analysed
- 
+
 figure
 set(gcf, 'Position',  [100, 100, 1000, 1000])   
     subplot(2,1,1);
@@ -74,4 +74,6 @@ for k=1:length(xtimes)
 end 
 xlabel('Distance (um)')
 ylabel('Force (pN)')
+xlim([0 5])
+ylim([-50 300])
 hold off

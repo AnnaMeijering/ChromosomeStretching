@@ -14,8 +14,8 @@ f_lb=100;           %lowerbound value for stiffness fit
 f_ub=200;           %upperbound value for stiffness fit
 k_threshold=0.02;   %stiffness threshold for length determination
 [chrom{iFile}.datafit,chrom{iFile}.stiffness,chrom{iFile}.k_model,chrom{iFile}.ks_mean,...
-    chrom{iFile}.k_model_low,chrom{iFile}.length, l_index(iFile),chrom{iFile}.f_num]...
-   = HW_stiffness_version2(FD.distances{iFile},FD.forces{iFile},f_lb,f_ub,k_threshold);        
+    chrom{iFile}.k_model_low,chrom{iFile}.length,l_index{iFile},chrom{iFile}.f_num]...
+   = HW_stiffness_version2b(FD.distances{iFile},FD.forces{iFile},f_lb,f_ub,k_threshold);        
 %[chrom{iFile}.length,index_l(iFile)]=length_from_stiffness(FD.distances{iFile}(2:end),FD.forces{iFile}(2:end),chrom{iFile}.stiffness,k_threshold);
 chrom{iFile}.k_ubound=chrom{iFile}.k_model.p1;
 %chrom{iFile}.k_lowforce=mean(chrom{iFile}.stiffness(1:index_l(iFile)));
@@ -157,24 +157,17 @@ end
 
 
 figure
-scatter(lengths(find(~treated)),stiffness(find(~treated)),'filled')
+scatter(lengths(find(~treated)),1./stiffness(find(~treated)),'filled')
 hold on
-scatter(lengths(find(treated)),stiffness(find(treated)),'filled')
+scatter(lengths(find(treated)),1./stiffness(find(treated)),'filled')
 hold off
 
-figure
-histogram(lengths(find(~treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
-hold on
-histogram(lengths(find(treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
-ylabel('Probability')
-xlabel('Length (µm)')
-legend('HCT116 control','HCT116 +IAA')
 
 figure
 histogram(lengths(find(~treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
 hold on
 histogram(lengths(find(treated)),0:0.5:20,'facealpha',.5,'edgecolor','none')
-ylabel('Probability')
+ylabel('Frequency')
 xlabel('Length (µm)')
 legend('HCT116 control','HCT116 +IAA')
 
