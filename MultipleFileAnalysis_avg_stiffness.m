@@ -9,7 +9,7 @@ load(filepath);
 close all
 
 lb = 20;
-ub = 200;
+ub = 300;
 f_ax = [0.1:0.1:300];
 
 k_topo = [];
@@ -109,7 +109,7 @@ plot(res)
  end
 k_avg = nanmean(k_norm);
 k_err = nanstd(k_norm);%/sqrt(length(k_norm(:,1)));
-errorbar(f_ax, k_avg,k_err,'b','LineWidth',2)
+%errorbar(f_ax, k_avg,k_err,'b','LineWidth',2)
 res = fit(f_ax((f_ax>lb) & (f_ax<ub))', k_avg((f_ax>lb) & (f_ax<ub))','power1');
 plot(res)
 legend off

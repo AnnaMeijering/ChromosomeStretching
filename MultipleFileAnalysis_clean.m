@@ -13,7 +13,7 @@ for iFile=1:NumFiles
 f_lb=100;           %lowerbound value for stiffness fit
 f_ub=200;           %upperbound value for stiffness fit
 k_threshold=0.02;   %stiffness threshold for length determination
-[chrom{iFile}.datafit,chrom{iFile}.stiffness,chrom{iFile}.k_model,chrom{iFile}.ks_mean,...
+[chrom{iFile}.datafit,chrom{iFile}.stiffness,chrom{iFile}.k_model,chrom{iFile}.k_plateau,...
     chrom{iFile}.k_model_low,chrom{iFile}.length,l_index{iFile},chrom{iFile}.f_num]...
    = HW_stiffness_version2b(FD.distances{iFile},FD.forces{iFile},f_lb,f_ub,k_threshold);        
 %[chrom{iFile}.length,index_l(iFile)]=length_from_stiffness(FD.distances{iFile}(2:end),FD.forces{iFile}(2:end),chrom{iFile}.stiffness,k_threshold);
@@ -123,6 +123,7 @@ for iChrom=1:NumFiles
  lengths(iChrom)=chrom{iChrom}.length;
  stiffness(iChrom)=chrom{iChrom}.k_ubound;
  stiffness_low(iChrom)=chrom{iChrom}.k_model_low.p1;
+ stiffness_length(iChrom)=chrom{iChrom}.k_plateau;
 end
 
 
@@ -142,19 +143,31 @@ histogram(stiffness,0:0.3:3,'facealpha',.5,'edgecolor','none')
 xlabel('Initial stiffness (pN/nm)')
 ylabel('Frequency')
 
-colour='kkkrrrbbbcccmmm';
+colour='kkkrrrbbbcccmmmggg';
 j=1;
     figure
-for i=[2 4 5 8 12 18 23 26 32 37 40 41 44]
+for i=[2 3 6 8 10 11 12 18 23 26 32 37 40 41 44]
 plot(FD.distances{i},FD.forces{i},colour(j))
-j=j+1;
+
 hold on
-vline(length(i))
+vline(lengths(i),colour(j))
+j=j+1;
 ylim([-50 300])
 xlim([0.5 5])
 end
 
+colour='krgbmc';
+j=1;
+    figure
+for i=[2 3 6 8 10 11]
+plot(FD.distances{i},FD.forces{i},colour(j))
 
+hold on
+vline(lengths(i),colour(j))
+j=j+1;
+ylim([-50 300])
+xlim([0 5])
+end
 
 figure
 scatter(lengths(find(~treated)),1./stiffness(find(~treated)),'filled')

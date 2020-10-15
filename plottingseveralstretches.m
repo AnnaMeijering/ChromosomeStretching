@@ -33,7 +33,9 @@ for i=1:length(xtimes)
     
     d_values{i}=cell2mat(dist.abs(index));
     f_values{i} = cell2mat(force.x(index)); 
+    fy_values{i}= cell2mat(force.y(index));
     t_values{i} = 1:length(f_values{i});
+    time_val{i}= cell2mat(force.x(index));
     
 end
 
@@ -77,3 +79,44 @@ ylabel('Force (pN)')
 xlim([0 5])
 ylim([-50 300])
 hold off
+
+% figure
+% yyaxis left
+%     plot(d_values{1},f_values{1},colours(1))
+%     hold on
+% yyaxis right
+% plot(d_values{1},fy_values{1},colours(1))
+% xlabel('Distance (um)')
+% ylabel('Force (pN)')
+% xlim([0 5])
+% %ylim([-50 300])
+% hold off
+
+
+% %[res,k_num_x,k_model,k_plateau_x,k_model_low,l_chrom,l_index,f_num]=HW_stiffness_version2b(d_values{1},f_values{1},100,200,0.02);
+% %[res,k_num_y,k_model,k_plateau_y,k_model_low,l_chrom,l_index,f_num]=HW_stiffness_version2b(d_values{1},fy_values{1},100,200,0.02);
+% ftot=sqrt(f_values{1}.^2+fy_values{1}.^2);
+% %alpha=cot(fy_values{1}./f_values{1});
+% beta=acos(f_values{1}./ftot);
+% 
+% figure
+% yyaxis left
+% plot(d_values{1},ftot)
+% ylabel('Force (pN)')
+% ylim([-50 350])
+% hold on
+% plot(d_values{1},f_values{1})
+% yyaxis right
+% plot(d_values{1},beta)
+% ylabel('Angle (rad)')
+% xlabel('Distance (µm)')
+% 
+% figure
+% plot(f_values{1},fy_values{1})
+% ylim([-50 200])
+% xlim([-50 200])
+% hline(0)
+% vline(0)
+
+
+

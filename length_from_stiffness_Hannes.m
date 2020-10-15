@@ -1,4 +1,4 @@
-function [l_chrom, l_index]=length_from_stiffness_Hannes(d,f,k,f_threshold,n_sigma)
+function [l_chrom, l_index, k_plateau]=length_from_stiffness_Hannes(d,f,k,f_threshold,n_sigma)
 
 %%%
 % Parameters: Distance d, Force f, Stiffness k,

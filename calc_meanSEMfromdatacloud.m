@@ -18,5 +18,6 @@ i_zeros=find(Ncounts<2);
 BinVal(i_zeros)=[];
 BinSEM(i_zeros)=[];
 bincentre(i_zeros)=[];
+binav(i_zeros)=[];
 
 end
